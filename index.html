@@ -32,7 +32,7 @@
         section {
             padding: 20px;
             margin: 20px auto;
-            max-width: 800px;
+            max-width: 900px;
             border-radius: 10px;
             background: rgba(0, 0, 0, 0.8);
             box-shadow: 0 0 10px #0072ff;
@@ -136,6 +136,21 @@
         <p>Empowering Online Safety Through Innovation</p>
     </header>
 
+    <section id="about">
+        <h2>About Us</h2>
+        <p>Welcome to Kala Security Program, where we are dedicated to educating and empowering individuals and organizations to navigate the online world safely and securely. Join us in creating a safer digital future!</p>
+    </section>
+
+    <section id="future-plans">
+        <h2>Future Plans</h2>
+        <ul>
+            <li>Develop advanced WiFi password protection software to secure networks.</li>
+            <li>Host cybersecurity workshops for businesses and individuals.</li>
+            <li>Create open-source tools for secure browsing and privacy protection.</li>
+            <li>Design AI-powered threat detection and response systems.</li>
+        </ul>
+    </section>
+
     <section id="password-checker">
         <h2>Password Strength Checker</h2>
         <input type="password" id="password-checker-input" placeholder="Enter your password" oninput="checkStrength()">
@@ -155,20 +170,11 @@
         <div class="terminal" id="terminal"></div>
     </section>
 
-    <section id="infoga">
-        <h2>InfoGathering Terminal</h2>
-        <input type="text" id="commandInput" placeholder="Enter command (e.g., instagram testuser)" />
-        <button onclick="executeCommand()">Run</button>
-        <div class="terminal" id="infoga-terminal"></div>
-    </section>
-
     <footer>
         <p>&copy; 2025 Kala Security Program. All Rights Reserved.</p>
     </footer>
 
     <script>
-        const BACKEND_URL = "http://backend.kalasecurityprogram.com"; // Update with your backend's Apache2 URL
-
         // Password Strength Checker
         function checkStrength() {
             const password = document.getElementById("password-checker-input").value;
@@ -220,90 +226,62 @@
                 </ul>
             `;
         }
+        function slowPrint(message, elementId, delay = 100) {
+            const terminal = document.getElementById(elementId);
+            let i = 0;
 
-        // Password Brute Force Simulator
+            const interval = setInterval(() => {
+                if (i < message.length) {
+                    terminal.innerHTML += message[i];
+                    terminal.scrollTop = terminal.scrollHeight; // Scroll to the bottom
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, delay);
+        }
+
         function simulateBruteForce() {
             const password = document.getElementById("password").value;
             const terminal = document.getElementById("terminal");
             const progressBar = document.getElementById("progress-bar");
 
-            if (password === "") {
+            if (!password) {
                 alert("Please enter a password to simulate!");
                 return;
             }
 
-            const length = password.length;
-            const hasUpper = /[A-Z]/.test(password);
-            const hasLower = /[a-z]/.test(password);
-            const hasNumbers = /[0-9]/.test(password);
-            const hasSymbols = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-            const charsetSize = (hasUpper ? 26 : 0) + (hasLower ? 26 : 0) + (hasNumbers ? 10 : 0) + (hasSymbols ? 32 : 0);
-            const totalCombinations = Math.pow(charsetSize, length);
-            const speed = 1000000;
+            const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+            const charsetSize = charset.length;
+            const totalCombinations = Math.pow(charsetSize, password.length);
+            const speed = 1000000000; // Simulated guesses per second
             const estimatedTime = Math.ceil(totalCombinations / speed);
 
             terminal.innerHTML = `<p>Starting brute force simulation...</p>`;
-            terminal.innerHTML += `<p>Password length: ${length}</p>`;
+            terminal.innerHTML += `<p>Password length: ${password.length}</p>`;
             terminal.innerHTML += `<p>Character set size: ${charsetSize}</p>`;
             terminal.innerHTML += `<p>Total combinations: ${totalCombinations.toLocaleString()}</p>`;
-            terminal.innerHTML += `<p>Estimated time to crack: ${estimatedTime} seconds at 1 million guesses/sec</p>`;
+            terminal.innerHTML += `<p>Estimated time to crack: ${estimatedTime} seconds at 100,000 guesses/sec</p>`;
+            terminal.innerHTML += `<p>Simulating guesses...</p>`;
 
             let progress = 0;
             let guessed = 0;
+            let currentCombination = "";
 
             const interval = setInterval(() => {
                 guessed += speed;
                 progress = Math.min((guessed / totalCombinations) * 100, 100);
                 progressBar.style.width = `${progress}%`;
-                terminal.innerHTML += `<p>Guessing... ${guessed.toLocaleString()} combinations tested...</p>`;
-                terminal.scrollTop = terminal.scrollHeight;
+
+                // Generate a sample random guess
+                currentCombination = Array.from({ length: password.length }, () => charset[Math.floor(Math.random() * charsetSize)]).join('');
+                slowPrint(`Guessing: ${currentCombination}\n`, "terminal", 10);
 
                 if (progress >= 100) {
                     clearInterval(interval);
                     terminal.innerHTML += `<p>Password cracked! Simulation complete.</p>`;
                 }
-            }, 100);
-        }
-
-        // InfoGathering Terminal
-        function executeCommand() {
-            const commandInput = document.getElementById("commandInput");
-            const command = commandInput.value.trim();
-            const terminal = document.getElementById("infoga-terminal");
-            commandInput.value = "";
-
-            appendToTerminal(`> ${command}`);
-
-            const [service, username] = command.split(" ");
-            if (!username) {
-                appendToTerminal(`Error: Please specify a username for ${service}.`);
-                return;
-            }
-
-            appendToTerminal(`Fetching data for ${service}: ${username}...`);
-            fetch(`${BACKEND_URL}/${service}/${username}`)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.error) {
-                        appendToTerminal(`Error: ${data.error}`);
-                    } else {
-                        Object.keys(data).forEach(key => {
-                            appendToTerminal(`${key}: ${data[key]}`);
-                        });
-                    }
-                })
-                .catch(error => {
-                    appendToTerminal(`Error: ${error.message}`);
-                });
-        }
-
-        function appendToTerminal(message) {
-            const terminal = document.getElementById("infoga-terminal");
-            terminal.innerHTML += `<p>${message}</p>`;
-            terminal.scrollTop = terminal.scrollHeight;
+            }, 500);
         }
     </script>
 </body>
