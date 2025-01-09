@@ -152,13 +152,71 @@
     </section>
 
     <section id="password-checker">
-        <h2>Password Strength Checker</h2>
-        <input type="password" id="password-checker-input" placeholder="Enter your password">
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="strength-progress-bar"></div>
-        </div>
-        <div class="terminal" id="strength-terminal"></div>
-    </section>
+    <h2>Password Strength Checker</h2>
+    <input type="password" id="password-checker-input" placeholder="Enter your password" oninput="checkStrength()">
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="strength-progress-bar"></div>
+    </div>
+    <div class="terminal" id="strength-terminal"></div>
+</section>
+
+<script>
+    function checkStrength() {
+        const password = document.getElementById("password-checker-input").value;
+        const progressBar = document.getElementById("strength-progress-bar");
+        const terminal = document.getElementById("strength-terminal");
+        
+        // Criteria
+        const lengthCriteria = password.length >= 8;
+        const uppercaseCriteria = /[A-Z]/.test(password);
+        const numberCriteria = /[0-9]/.test(password);
+        const specialCharCriteria = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        // Calculate Strength
+        let strength = 0;
+        if (lengthCriteria) strength++;
+        if (uppercaseCriteria) strength++;
+        if (numberCriteria) strength++;
+        if (specialCharCriteria) strength++;
+
+        // Update Progress Bar and Feedback
+        let strengthText = "";
+        if (strength === 0) {
+            progressBar.style.width = "0%";
+            progressBar.style.backgroundColor = "#333";
+            strengthText = "No Password Entered";
+        } else if (strength === 1) {
+            progressBar.style.width = "25%";
+            progressBar.style.backgroundColor = "red";
+            strengthText = "Weak Password";
+        } else if (strength === 2) {
+            progressBar.style.width = "50%";
+            progressBar.style.backgroundColor = "orange";
+            strengthText = "Moderate Password";
+        } else if (strength === 3) {
+            progressBar.style.width = "75%";
+            progressBar.style.backgroundColor = "yellow";
+            strengthText = "Strong Password";
+        } else if (strength === 4) {
+            progressBar.style.width = "100%";
+            progressBar.style.backgroundColor = "green";
+            strengthText = "Very Strong Password";
+        }
+
+        // Update Terminal
+        terminal.innerHTML = `
+            <p>Password Strength: ${strengthText}</p>
+            <p>Criteria Met:</p>
+            <ul>
+                <li>Length >= 8: ${lengthCriteria ? "✅" : "❌"}</li>
+                <li>Uppercase Letters: ${uppercaseCriteria ? "✅" : "❌"}</li>
+                <li>Numbers: ${numberCriteria ? "✅" : "❌"}</li>
+                <li>Special Characters: ${specialCharCriteria ? "✅" : "❌"}</li>
+            </ul>
+        `;
+    }
+</script>
+
 
     <section id="brute-force-sim">
         <h2>Password Brute Force Simulator</h2>
