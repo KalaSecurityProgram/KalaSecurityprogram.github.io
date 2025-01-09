@@ -7,95 +7,108 @@
     <style>
         /* General Styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+            color: #fff;
             line-height: 1.6;
         }
 
         header {
-            background: linear-gradient(135deg, #007BFF, #00D4FF);
-            color: white;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #fff;
             padding: 20px;
             text-align: center;
+            box-shadow: 0 0 15px #0072ff;
         }
 
         header h1 {
             margin: 0;
             font-size: 2.5rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #00c6ff, 0 0 20px #0072ff;
         }
 
         header p {
             margin: 10px 0 0;
+            font-size: 1.2rem;
         }
 
         section {
             padding: 20px;
             margin: 20px auto;
             max-width: 800px;
-        }
-
-        #contact {
-            background: white;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
-        #contact h2 {
-            color: #007BFF;
+        #future-plans ul {
+            list-style: none;
+            padding: 0;
         }
 
-        #contact a {
-            color: #007BFF;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        #contact a:hover {
-            text-decoration: underline;
-        }
-
-        #contact-form {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        #contact-form h2 {
-            color: #007BFF;
-        }
-
-        #contact-form input, #contact-form textarea, #contact-form button {
-            display: block;
-            width: 90%;
-            margin: 10px auto;
+        #future-plans ul li {
+            margin: 10px 0;
             padding: 10px;
-            font-size: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            box-shadow: 0 0 5px #0072ff;
         }
 
-        #contact-form button {
-            background: #007BFF;
-            color: white;
+        #password-checker input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px auto;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
+            font-size: 16px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            box-shadow: 0 0 10px #0072ff;
         }
 
-        #contact-form button:hover {
-            background: #0056b3;
+        .strength-bar {
+            height: 10px;
+            width: 90%;
+            margin: 10px auto;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 5px #0072ff;
+        }
+
+        .strength-bar div {
+            height: 100%;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .strength-bar.weak div {
+            width: 33%;
+            background: red;
+            box-shadow: 0 0 10px red;
+        }
+
+        .strength-bar.medium div {
+            width: 66%;
+            background: orange;
+            box-shadow: 0 0 10px orange;
+        }
+
+        .strength-bar.strong div {
+            width: 100%;
+            background: green;
+            box-shadow: 0 0 10px green;
         }
 
         footer {
-            background: #333;
-            color: white;
             text-align: center;
-            padding: 10px 0;
-            margin-top: 20px;
+            padding: 10px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: #fff;
+            box-shadow: 0 0 15px #0072ff;
         }
     </style>
 </head>
@@ -110,23 +123,66 @@
         <p>Welcome to Kala Security Program, where we are dedicated to educating and empowering individuals and organizations to navigate the online world safely and securely. Join us in creating a safer digital future!</p>
     </section>
 
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Email us at: <a href="mailto:saikamesh.y@gmail.com">saikamesh.y@gmail.com</a></p>
+    <section id="future-plans">
+        <h2>Future Plans</h2>
+        <ul>
+            <li>Develop advanced WiFi password protection software to secure networks.</li>
+            <li>Host cybersecurity workshops for businesses and individuals.</li>
+            <li>Create open-source tools for secure browsing and privacy protection.</li>
+            <li>Design AI-powered threat detection and response systems.</li>
+        </ul>
     </section>
 
-    <section id="contact-form">
-        <h2>Send Us a Message</h2>
-        <form action="https://formsubmit.co/saikamesh.y@gmail.com" method="POST">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-            <button type="submit">Send</button>
-        </form>
+    <section id="password-checker">
+        <h2>Password Strength Checker</h2>
+        <input type="password" id="password" placeholder="Enter your password" oninput="checkStrength()">
+        <div class="strength-bar" id="strength-bar">
+            <div></div>
+        </div>
+        <div class="feedback" id="feedback"></div>
     </section>
 
     <footer>
         <p>&copy; 2025 Kala Security Program. All Rights Reserved.</p>
     </footer>
+
+    <script>
+        function checkStrength() {
+            const password = document.getElementById("password").value;
+            const strengthBar = document.getElementById("strength-bar");
+            const feedback = document.getElementById("feedback");
+            const bar = strengthBar.querySelector("div");
+
+            const lengthCriteria = password.length >= 8;
+            const uppercaseCriteria = /[A-Z]/.test(password);
+            const numberCriteria = /[0-9]/.test(password);
+            const specialCharCriteria = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            let strength = 0;
+            if (lengthCriteria) strength++;
+            if (uppercaseCriteria) strength++;
+            if (numberCriteria) strength++;
+            if (specialCharCriteria) strength++;
+
+            if (strength === 0) {
+                bar.style.width = "0%";
+                feedback.textContent = "";
+                strengthBar.className = "strength-bar";
+            } else if (strength === 1) {
+                bar.style.width = "33%";
+                feedback.textContent = "Weak";
+                strengthBar.className = "strength-bar weak";
+            } else if (strength === 2) {
+                bar.style.width = "66%";
+                feedback.textContent = "Medium";
+                strengthBar.className = "strength-bar medium";
+            } else if (strength >= 3) {
+                bar.style.width = "100%";
+                feedback.textContent = "Strong";
+                strengthBar.className = "strength-bar strong";
+            }
+        }
+    </script>
 </body>
 </html>
+
