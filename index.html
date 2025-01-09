@@ -275,7 +275,7 @@
 
                 // Generate a sample random guess
                 currentCombination = Array.from({ length: password.length }, () => charset[Math.floor(Math.random() * charsetSize)]).join('');
-                slowPrint(`Guessing: ${currentCombination}\n`, "terminal", 10);
+                slowPrint(`Guessing: ${guessed}`, "terminal", 10);
 
                 if (progress >= 100) {
                     clearInterval(interval);
