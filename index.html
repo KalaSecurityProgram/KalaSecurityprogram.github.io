@@ -7,32 +7,26 @@
     <style>
         /* General Styling */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Courier New', monospace;
             margin: 0;
             padding: 0;
             background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
-            color: #fff;
+            color: #00ff00;
             line-height: 1.6;
         }
 
         header {
-            background: linear-gradient(135deg, #00c6ff, #0072ff);
-            color: #fff;
-            padding: 20px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: white;
             text-align: center;
+            padding: 20px;
             box-shadow: 0 0 15px #0072ff;
         }
 
         header h1 {
             margin: 0;
             font-size: 2.5rem;
-            text-transform: uppercase;
             text-shadow: 0 0 10px #00c6ff, 0 0 20px #0072ff;
-        }
-
-        header p {
-            margin: 10px 0 0;
-            font-size: 1.2rem;
         }
 
         section {
@@ -40,74 +34,98 @@
             margin: 20px auto;
             max-width: 800px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 10px #0072ff;
         }
 
-        #future-plans ul {
+        section h2 {
+            color: #00c6ff;
+        }
+
+        ul {
             list-style: none;
             padding: 0;
         }
 
-        #future-plans ul li {
+        ul li {
             margin: 10px 0;
             padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 5px;
             box-shadow: 0 0 5px #0072ff;
         }
 
-        #password-checker input[type="password"] {
+        input[type="password"],
+        input[type="text"] {
             width: 90%;
             padding: 10px;
             margin: 10px auto;
+            display: block;
             border: none;
             border-radius: 5px;
             font-size: 16px;
             outline: none;
             background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            color: white;
             box-shadow: 0 0 10px #0072ff;
         }
 
-        .strength-bar {
-            height: 10px;
-            width: 90%;
-            margin: 10px auto;
-            background: #333;
+        button {
+            padding: 10px 20px;
+            background: #00c6ff;
+            border: none;
             border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 0 10px #0072ff;
+        }
+
+        button:hover {
+            background: #0072ff;
+            box-shadow: 0 0 20px #0072ff;
+        }
+
+        .progress-bar-container {
+            width: 90%;
+            height: 20px;
+            background: #333;
+            margin: 20px auto;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 0 5px #0072ff;
+            box-shadow: 0 0 10px #0072ff;
         }
 
-        .strength-bar div {
+        .progress-bar {
             height: 100%;
-            transition: width 0.3s ease-in-out;
+            width: 0%;
+            background: #00ff00;
+            transition: width 0.1s ease-in-out;
         }
 
-        .strength-bar.weak div {
-            width: 33%;
-            background: red;
-            box-shadow: 0 0 10px red;
+        .terminal {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 0 10px #0072ff;
         }
 
-        .strength-bar.medium div {
-            width: 66%;
-            background: orange;
-            box-shadow: 0 0 10px orange;
-        }
-
-        .strength-bar.strong div {
-            width: 100%;
-            background: green;
-            box-shadow: 0 0 10px green;
+        .terminal p {
+            margin: 5px 0;
         }
 
         footer {
             text-align: center;
             padding: 10px;
             background: linear-gradient(135deg, #0072ff, #00c6ff);
-            color: #fff;
+            color: white;
             box-shadow: 0 0 15px #0072ff;
         }
     </style>
@@ -135,11 +153,23 @@
 
     <section id="password-checker">
         <h2>Password Strength Checker</h2>
-        <input type="password" id="password" placeholder="Enter your password" oninput="checkStrength()">
-        <div class="strength-bar" id="strength-bar">
-            <div></div>
+        <input type="password" id="password-checker-input" placeholder="Enter your password">
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="strength-progress-bar"></div>
         </div>
-        <div class="feedback" id="feedback"></div>
+        <div class="terminal" id="strength-terminal"></div>
+    </section>
+
+    <section id="brute-force-sim">
+        <h2>Password Brute Force Simulator</h2>
+        <input type="password" id="password" placeholder="Enter your password">
+        <button onclick="simulateBruteForce()">Simulate Brute Force</button>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="terminal" id="terminal"></div>
     </section>
 
     <footer>
@@ -147,42 +177,48 @@
     </footer>
 
     <script>
-        function checkStrength() {
+        function simulateBruteForce() {
             const password = document.getElementById("password").value;
-            const strengthBar = document.getElementById("strength-bar");
-            const feedback = document.getElementById("feedback");
-            const bar = strengthBar.querySelector("div");
+            const terminal = document.getElementById("terminal");
+            const progressBar = document.getElementById("progress-bar");
 
-            const lengthCriteria = password.length >= 8;
-            const uppercaseCriteria = /[A-Z]/.test(password);
-            const numberCriteria = /[0-9]/.test(password);
-            const specialCharCriteria = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-            let strength = 0;
-            if (lengthCriteria) strength++;
-            if (uppercaseCriteria) strength++;
-            if (numberCriteria) strength++;
-            if (specialCharCriteria) strength++;
-
-            if (strength === 0) {
-                bar.style.width = "0%";
-                feedback.textContent = "";
-                strengthBar.className = "strength-bar";
-            } else if (strength === 1) {
-                bar.style.width = "33%";
-                feedback.textContent = "Weak";
-                strengthBar.className = "strength-bar weak";
-            } else if (strength === 2) {
-                bar.style.width = "66%";
-                feedback.textContent = "Medium";
-                strengthBar.className = "strength-bar medium";
-            } else if (strength >= 3) {
-                bar.style.width = "100%";
-                feedback.textContent = "Strong";
-                strengthBar.className = "strength-bar strong";
+            if (password === "") {
+                alert("Please enter a password to simulate!");
+                return;
             }
+
+            const length = password.length;
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasNumbers = /[0-9]/.test(password);
+            const hasSymbols = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            const charsetSize = (hasUpper ? 26 : 0) + (hasLower ? 26 : 0) + (hasNumbers ? 10 : 0) + (hasSymbols ? 32 : 0);
+            const totalCombinations = Math.pow(charsetSize, length);
+            const speed = 1000000;
+            const estimatedTime = Math.ceil(totalCombinations / speed);
+
+            terminal.innerHTML = `<p>Starting brute force simulation...</p>`;
+            terminal.innerHTML += `<p>Password length: ${length}</p>`;
+            terminal.innerHTML += `<p>Character set size: ${charsetSize}</p>`;
+            terminal.innerHTML += `<p>Total combinations: ${totalCombinations.toLocaleString()}</p>`;
+            terminal.innerHTML += `<p>Estimated time to crack: ${estimatedTime} seconds at 1 million guesses/sec</p>`;
+
+            let progress = 0;
+            let guessed = 0;
+
+            const interval = setInterval(() => {
+                guessed += speed;
+                progress = Math.min((guessed / totalCombinations) * 100, 100);
+                progressBar.style.width = `${progress}%`;
+                terminal.innerHTML += `<p>Guessing... ${guessed.toLocaleString()} combinations tested...</p>`;
+                terminal.scrollTop = terminal.scrollHeight;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    terminal.innerHTML += `<p>Password cracked! Simulation complete.</p>`;
+                }
+            }, 100);
         }
     </script>
 </body>
 </html>
-
