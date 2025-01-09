@@ -254,7 +254,7 @@
             const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
             const charsetSize = charset.length;
             const totalCombinations = Math.pow(charsetSize, password.length);
-            const speed = 1000000000; // Simulated guesses per second
+            const speed = 100000; // Simulated guesses per second
             const estimatedTime = Math.ceil(totalCombinations / speed);
 
             terminal.innerHTML = `<p>Starting brute force simulation...</p>`;
